@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "AntiCookieBox",
-  "description": "This extension will delete an 'accept cookie' section of a page, by simply removing it from your screen",
+  "description": "This extension will delete an 'accept cookie' section of a page by simply removing it from your screen",
   "version": "2.3",
   "content_scripts": [
 	   {
