@@ -1,0 +1,135 @@
+body {
+	font-family: "Muli", monospace;
+	font-size: 15px;
+	width: 190px;
+	overflow: none;
+}
+
+.ghost-playground {
+	height: 180px;
+	width: 100%;
+}
+
+.ghost {
+	width: 100%;
+	animation: MoveUpDown 5s ease-in-out infinite;
+    position: relative;
+	height: 100px;
+}
+
+.speech-box {
+	width: 90px;
+	top: -100px;
+	left: 80px;
+	color: black;
+	position: relative;
+	padding: 0.6em;
+	border: 1px solid #ccc;
+	border-radius: 0.5em;
+}
+
+.sb-triangle:before {
+    content: "";
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border: 0.4em solid transparent;
+	margin-top: -0.4em;
+	margin-left: -0.4em;
+	border-right-color: #ccc;
+	left: -6px;
+	top: 40px;
+}
+
+@keyframes MoveUpDown {
+    0%, 100% {
+        top: 15%;
+    }
+    50% {
+        top: 35%;
+    }
+}
+
+html {
+	--cookie-brown: #795637;
+	--light-cookie-brown: #96744e;
+	--dark-cookie-brown: #5e3d1e;
+	--lighter-cookie-brown: #c29f78;
+
+	--light-green: #d6f2d6;
+	--light-blue: #d6f2f9;
+	--light-red: #f2d6d6;
+}
+
+.anti {font-weight: bold; color: rgb(219, 51, 51);}
+.cookie {font-weight: bold; color: var(--cookie-brown);}
+.box {font-weight: bold; color: #795637;}
+
+.acb-button#add-exception-btn:hover {
+	background-color: var(--light-green);
+}
+
+.acb-button#open-settings-btn:hover {
+	background-color: var(--light-green);
+}
+
+.acb-button#reverse-changes-btn:hover {
+	background-color: var(--light-blue);
+}
+
+.acb-button#redo-changes-btn:hover {
+	background-color: var(--light-blue);
+}
+
+.acb-button#report-error-btn:hover {
+	background-color: var(--light-red);
+}
+
+.ghost-img {
+	image-rendering: pixelated;
+	width: 41%;
+	height: auto;
+}
+
+.acb-button {
+	z-index: 100;
+	display: block;
+	width: 100%;
+	font-family: 'Quicksand', sans-serif;
+	font-size: 1.2em;
+	transition: 0.1s;
+	border: 1px solid #ccc;
+	cursor: pointer;
+}
+
+.acb-button:hover {
+	background-color: #fff;
+}
+
+.buttons-container {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-row-gap: 3px;
+	padding-bottom: 1px;
+}
+
+.header {
+	display: grid;
+	grid-template-columns: 80% 20%;
+}
+
+.header-text {
+	font-family: 'Quicksand', sans-serif;
+	font-size: 1.2em;
+}
+
+#settings {
+	display: inline;
+	height: 1em;
+	cursor: pointer;
+	text-align: right;
+}
+
+#settings > img {
+	width: 1.5em;
+}
