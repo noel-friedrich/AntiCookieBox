@@ -1,0 +1,223 @@
+<!doctype html>
+
+<html>
+	<head>
+
+		<title>ACB Settings</title>
+		<link rel="stylesheet" href="options.css"></link>
+
+	</head>
+
+	<body>
+
+		<div class="og-container">
+			<div class="container">
+				<h1 class="settings-header">Settings</h1>
+				<hr>
+				<table class="settings-table">
+					<tbody class="settings-table">
+						<tr>
+							<td>Aggressive Mode</td>
+							<td><input type="checkbox" id="aggressive-check"></td>
+						</tr>
+						<tr>
+							<td class="setting-desc">
+								make <span style=color:blue>Lucy</span> fight more, might lead to unwanted changes
+							</td>
+						</tr>
+						<tr>
+							<td>Normal Mode</td>
+							<td><input type="checkbox" id="normal-check" checked></td>
+						</tr>
+						<tr>
+							<td class="setting-desc">
+								normal accuracy and willpower. this normally works best
+							</td>
+						</tr>
+						<tr>
+							<td>Peaceful Mode</td>
+							<td><input type="checkbox" id="peaceful-check"></td>
+						</tr>
+						<tr>
+							<td class="setting-desc">
+								make <span style=color:blue>Lucy</span> fight less,<br>might lead to elements being left
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<hr>
+
+				<table class="settings-table">
+					<tbody class="settings-table">
+						<tr>
+							<td>Remove Scroll-Lock</td>
+							<td><input type="checkbox" id="scrolllock-check"></td>
+						</tr>
+						<tr>
+							<td class="setting-desc" style="padding-bottom: 10px">
+								<ul>
+									<li>Make Lucy look out for sites that disabled scrolling
+										<ul>
+											<li>
+												Websites sometimes disable scrolling when they think you're reading the cookie box
+											</li>
+										</ul>
+									</li>
+									<li>Might lead to Lucy sometimes adding Scrollbars where there shouldn't be any</li>
+								</ul>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<hr>
+
+				<table class="settings-table">
+					<tbody class="settings-table">
+						<tr>
+							<td>Lucy Fly Animation</td>
+							<td><input type="checkbox" id="animation-check"></td>
+						</tr>
+						<tr>
+							<td class="setting-desc" style="padding-bottom: 10px">
+								<ul>
+									<li>Make Lucy fly by when she consumes an element</li>
+									<li>The animation happens on the right side of the webpage</li>
+								</ul>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<hr>
+
+				<h2 class="exceptions-header">Customizing Lucy</h2>
+
+				<div class="exceptions-table-wrapper" style="max-height: 15em">
+
+					<table class="skins-table">
+
+						<tr class="spaceunder">
+
+							<td title="cap lucy">
+								<img src="popup/lucy-imgs/ghost-3.png" class="skin-img" id="skin1">
+							</td>
+							<td title="hair lucy">
+								<img src="popup/lucy-imgs/ghost-4.png" class="skin-img" id="skin2">
+							</td>
+							<td title="magic lucy">
+								<img src="popup/lucy-imgs/ghost-5.png" class="skin-img" id="skin3">
+							</td>
+
+						</tr>
+
+						<tr class="spaceunder">
+
+							<td title="fearless lucy">
+								<img src="popup/lucy-imgs/ghost-6.png" class="skin-img" id="skin4">
+							</td>
+							<td title="rainbow lucy">
+								<img src="popup/lucy-imgs/ghost-7.png" class="skin-img" id="skin5">
+							</td>
+							<td title="cool lucy">
+								<img src="popup/lucy-imgs/ghost-8.png" class="skin-img" id="skin6">
+							</td>
+
+						</tr>
+
+						<tr class="spaceunder">
+
+							<td title="bandit lucy">
+								<img src="popup/lucy-imgs/ghost-9.png" class="skin-img" id="skin7">
+							</td>
+							<td title="kid lucy">
+								<img src="popup/lucy-imgs/ghost-10.png" class="skin-img" id="skin8">
+							</td>
+							<td title="sus lucy">
+								<img src="popup/lucy-imgs/ghost-11.png" class="skin-img" id="skin9">
+							</td>
+
+						</tr>
+
+						<tr class="spaceunder">
+
+							<td title="zombie lucy">
+								<img src="popup/lucy-imgs/ghost-12.png" class="skin-img" id="skin10">
+							</td>
+							<td title="rich lucy">
+								<img src="popup/lucy-imgs/ghost-13.png" class="skin-img" id="skin11">
+							</td>
+							<td title="happy lucy">
+								<img src="popup/lucy-imgs/ghost-14.png" class="skin-img" id="skin12">
+							</td>
+
+						</tr>
+
+						<tr>
+
+							<td title="exited lucy">
+								<img src="popup/lucy-imgs/ghost-15.png" class="skin-img" id="skin13">
+							</td>
+							<td title="serious-business lucy">
+								<img src="popup/lucy-imgs/ghost-16.png" class="skin-img" id="skin14">
+							</td>
+							<td title="random lucy">
+								<img src="popup/random-ghost.png" class="skin-img" id="skin15">
+							</td>
+
+						</tr>
+
+					</table>
+
+				</div>
+
+				Selected:<span id="skin-desc"></span>
+
+				<hr>
+
+				<h2 class="exceptions-header">Exceptions</h2>
+				<div class="exceptions-table-wrapper">
+					<table class="exceptions-table">
+						<tbody class="exceptions-tbody" id="exceptions_tbody">
+						</tbody>
+					</table>
+				</div>
+				<input type="text" id="add_exception_input" placeholder="google.com">
+				<button id="add_exception">
+					Add
+				</button>
+				<p id="add_exception_error">input does not match url format!</p>
+
+				<hr>
+
+				<h2 class="keywords-header" id="keywords_header">
+					Keywords (<span style=color:red>Experimental</span>)
+				</h2>
+
+				<div id="keywords_div">
+					<textarea id="keywords_text" spellcheck="false">hi</textarea>
+					<p class="keywords_desc">
+						Lucy goes through every Element on the page and removes those who
+						contain a certain number of keywords. You can specify the keyWords
+						Lucy searches for above
+					</p>
+					<p class="keywords_desc">(seperate your keywords by comma)</p>
+				</div>
+
+				<hr>
+
+				<button id="save_button">
+					Save
+				</button>
+				<hr>
+				<p class="end-desc">
+					The Data is stored locally with Chrome's Storage API. Your Settings should also be synchronized across all of your favorite
+					devices.<br>Any Questions regarding your data? Contact <a href="mailto:noel.friedrich@outlook.de" class="nullify-a">Noel Friedrich</a>
+				</p>
+			</div>
+		</div>
+
+		<script src="options.js"></script>
+
+	</body>
