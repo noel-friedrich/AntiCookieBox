@@ -30,7 +30,7 @@
     	  "48": "images/logos/logo48.png",
     	  "128": "images/logos/logo128.png"
       },
-      "default_title": "Anti Cookie Box",
+      "default_title": "AntiCookieBox",
       "default_popup": "popup/popup.html"
   },
   "options_page": "options/options.html"
