@@ -92,6 +92,25 @@
 
 				<hr>
 
+				<table class="settings-table">
+					<tbody class="settings-table">
+						<tr>
+							<td>Scan Text Content</td>
+							<td><input type="checkbox" id="scan-text-check"></td>
+						</tr>
+						<tr>
+							<td class="setting-desc" style="padding-bottom: 10px">
+								<ul>
+									<li>Let Lucy search through the Text Content for Keywords</li>
+									<li>Will probably lead to Texts about Cookie disappearing</li>
+								</ul>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<hr>
+
 				<h2 class="exceptions-header">Customizing Lucy</h2>
 
 				<div class="exceptions-table-wrapper" style="max-height: 15em">
@@ -188,6 +207,20 @@
 					Add
 				</button>
 				<p id="add_exception_error">input does not match url format!</p>
+
+				<hr>
+
+				<p class="end-desc">
+					Because Lucy isn't perfect, we help Lucy by providing help on certain sites 
+					that she has difficulties on. The list of these custom site options is updated once a day and 
+					is being stored in your browser's local storage.
+				</p>
+
+				<div class="custom-options-info-table">
+					<div class="a">Last Update:</div>
+					<div class="b" id="last-solutions-update">Loading...</div>
+					<button class="c" id="update-solutions">Update Custom Site Options</button>
+				</div>
 
 				<hr>
 
