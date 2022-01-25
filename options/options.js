@@ -112,6 +112,12 @@ function changeMode(evt, direct_evt=false) {
 	saveSettings()
 }
 
+async function requestSolutions() {
+	let api = "https://www.noel-friedrich.de/anticookiebox/solutions.php"
+	let response = await fetch(api)
+	return response.json()
+}
+
 function changeScrollLock(active) {
 	document.getElementById("scrolllock-check").checked = active
 }
@@ -175,7 +181,6 @@ function getExceptionsFromHTML() {
 		if (exception)
 			new_exceptions.push(exception)
 	}
-	console.log(new_exceptions)
 	let placeholder_exceptions = [
 		"No Exceptions Found!",
 		"Add Exceptions in the Popup Menu",
@@ -184,6 +189,29 @@ function getExceptionsFromHTML() {
 	]
 
 	return (JSON.stringify(placeholder_exceptions) == JSON.stringify(new_exceptions)) ? [] : new_exceptions
+}
+
+async function getLocalStorage() {
+	return new Promise(resolve => {
+		chrome.storage.local.get({
+			acb_cookiesremoved: {},
+			exception: "",
+			ACB_ACTIVE: true,
+			solutions: {data: {}, lastUpdate: 0}
+		}, function(items) {
+			resolve(items)
+		})
+	})
+}
+
+async function setLocalStorage(key, value) {
+	return new Promise(resolve => {
+		chrome.storage.local.set({
+			[key]: value
+		}, function() {
+			resolve()
+		})
+	})
 }
 
 function getCurrentMode() {
@@ -212,6 +240,8 @@ function addException() {
 document.getElementById("add_exception").addEventListener('click', addException)
 document.getElementById("scrolllock-check").addEventListener('click', saveSettings)
 document.getElementById("animation-check").addEventListener('click', saveSettings)
+document.getElementById("scan-text-check").addEventListener('click', saveSettings)
+document.getElementById("update-solutions").addEventListener('click', updateSolutions)
 
 let aggressive_check = document.getElementById('aggressive-check')
 let normal_check = document.getElementById('normal-check')
@@ -234,7 +264,8 @@ function saveSettings() {
 		acb_keywords: getKeywords(),
 		acb_lucy: lucySkinIndex,
 		acb_scrolllock: document.getElementById("scrolllock-check").checked,
-		acb_lucyanimation: document.getElementById("animation-check").checked
+		acb_lucyanimation: document.getElementById("animation-check").checked,
+		acb_scan_text: document.getElementById("scan-text-check").checked
 	}, function() {
 		let status = document.getElementById('save_button')
 		status.textContent = 'Settings Saved'
@@ -291,6 +322,10 @@ function drawLucySkins(selectedLucy) {
 	saveSettings()
 }
 
+function changeScanText(value) {
+	document.getElementById("scan-text-check").checked = value
+}
+
 function restoreSettings() {
 	chrome.storage.sync.get({
 		acb_mode: 'normal',
@@ -298,15 +333,47 @@ function restoreSettings() {
 		acb_keywords: keywords.standard,
 		acb_lucy: 0,
 		acb_scrolllock: true,
-		acb_lucyanimation: true
+		acb_lucyanimation: true,
+		acb_scan_text: false
     }, function(items) {
 		changeAnimation(items.acb_lucyanimation)
+		changeScanText(items.acb_scan_text)
 		changeScrollLock(items.acb_scrolllock)
 		changeMode(items.acb_mode, direct_evt=true)
 		addExceptions(items.acb_exceptions)
 		addKeywords(items.acb_keywords)
 		drawLucySkins(items.acb_lucy)
-    });
+    })
 }
+
+async function updateSolutionTime() {
+	let localStorage = await getLocalStorage()
+	let solutions = localStorage.solutions
+	let lastUpdate = solutions.lastUpdate
+	let hours = Math.floor((Date.now() - lastUpdate) / 1000 / 60 / 60)
+	let minutes = Math.floor((Date.now() - lastUpdate) / 1000 / 60)
+	let seconds = Math.floor((Date.now() - lastUpdate) / 1000)
+	if (hours > 0) {
+		document.getElementById("last-solutions-update").textContent = `${hours} hour/s ago`
+	} else if (minutes > 0) {
+		document.getElementById("last-solutions-update").textContent = `${minutes} minute/s ago`
+	} else {
+		document.getElementById("last-solutions-update").textContent = `${seconds} second/s ago`
+	}
+	if (hours > 24) {
+		await updateSolutions()
+	}
+}
+
+async function updateSolutions() {
+	let soltionData = await requestSolutions()
+	let time = Date.now()
+	await setLocalStorage("solutions", {
+		data: soltionData,
+		lastUpdate: time
+	})
+}
+
+setInterval(updateSolutionTime, 1000)
 
 restoreSettings()
