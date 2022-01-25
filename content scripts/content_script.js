@@ -17,6 +17,8 @@ let LUCY_IMAGES = [
 
 let ANIMATION_ACTIVE = false
 
+const DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24
+
 let standardOptions = {
 
 	keywords: {
@@ -93,7 +95,8 @@ options = {
 		attributes: 10,
 		popup: 10
 	},
-	mode: standardOptions.mode
+	mode: standardOptions.mode,
+	scanText: false
 }
 
 // VARIABLES END
@@ -112,7 +115,8 @@ async function getSyncStorage() {
 			acb_keywords: Array(),
 			acb_scrolllock: true,
 			acb_lucy: 0,
-			acb_lucyanimation: true
+			acb_lucyanimation: true,
+			acb_scan_text: false
 		}, function(items) {
 			resolve(items)
 		})
@@ -124,9 +128,20 @@ async function getLocalStorage() {
 		chrome.storage.local.get({
 			acb_cookiesremoved: {},
 			exception: "",
-			ACB_ACTIVE: true
+			ACB_ACTIVE: true,
+			solutions: {data: {}, lastUpdate: 0}
 		}, function(items) {
 			resolve(items)
+		})
+	})
+}
+
+async function setLocalStorage(key, value) {
+	return new Promise(resolve => {
+		chrome.storage.local.set({
+			[key]: value
+		}, function() {
+			resolve()
 		})
 	})
 }
@@ -222,6 +237,12 @@ async function reportURL(url) {
 	})
 }
 
+async function requestSolutions() {
+	let api = "https://www.noel-friedrich.de/anticookiebox/solutions.php"
+	let response = await fetch(api)
+	return response.json()
+}
+
 function getAttributeString(element) {
 	let attrs = element.attributes
 	let outString = ""
@@ -229,6 +250,7 @@ function getAttributeString(element) {
 		if (attrs[i].value.length < 100)
 			outString += attrs[i].value
 	}
+	outString += element.className
 	return outString
 }
 
@@ -254,15 +276,37 @@ function cookieLog(message, ...args) {
 
 // UTILITY FUNCTIONS END
 
+async function getSolutions() {
+	return new Promise(async resolve => {
+		let localStorage = await getLocalStorage()
+		let solutions = localStorage.solutions
+		let timeDiff = Date.now() - solutions.lastUpdate
+		let solutionData = solutions.data
+		if (!solutions.lastUpdate || timeDiff > DAY_IN_MILLISECONDS) {
+			let hours = timeDiff / (1000 * 60 * 60)
+			cookieLog(`Setting New Solutions [Last Update: ${hours} hours ago]`)
+			solutionData = await requestSolutions()
+			let newSolution = {
+				lastUpdate: Date.now(),
+				data: solutionData
+			}
+			await setLocalStorage("solutions", newSolution)
+		}
+		resolve(solutionData)
+	})
+}
+
 function scoreElement(element) {
 	let scoreCounter = 0
 
-	// check occurances of keywords in textContent
-	let textContent = getRealTextContent(element).toLowerCase()
-	for (let i = 0; i < options.keyWords.length; i++) {
-		let keyword = options.keyWords[i].toLowerCase()
-		let occurances = textContent.countSubString(keyword)
-		scoreCounter += (occurances * options.multipliers.textContent)
+	if (options.scanText) {
+		// check occurances of keywords in textContent
+		let textContent = getRealTextContent(element).toLowerCase()
+		for (let i = 0; i < options.keyWords.length; i++) {
+			let keyword = options.keyWords[i].toLowerCase()
+			let occurances = textContent.countSubString(keyword)
+			scoreCounter += (occurances * options.multipliers.textContent)
+		}
 	}
 
 	// check occurances of keywords in attributes
@@ -498,6 +542,7 @@ async function run() {
 async function initOptions() {
 	return new Promise(async (resolve, reject) => {
 		let syncStorage = await getSyncStorage()
+		let solutions = await getSolutions()
 
 		// set keywords according to users settings
 		switch (syncStorage.acb_mode) {
@@ -525,12 +570,14 @@ async function initOptions() {
 		// set lucy animation toggle
 		options.lucyAnimation = syncStorage.acb_lucyanimation
 
-		cookieLog(`mode: ${syncStorage.acb_mode}`)
-		cookieLog(`scrolllock: ${syncStorage.acb_scrolllock}`)
-
 		// extra check for custom keywords
 		if (syncStorage.acb_keywords.length > 0)
 			options.keyWords = syncStorage.acb_keywords
+			
+		// scan text for keywords
+		options.scanText = syncStorage.acb_scan_text
+
+		cookieLog(`mode=${syncStorage.acb_mode} scrolllock=${syncStorage.acb_scrolllock} scanText=${options.scanText} lucyAnimation=${syncStorage.acb_lucyanimation}`)
 
 		// check if this website is in exceptions list
 		let url = window.location.href
@@ -539,6 +586,21 @@ async function initOptions() {
 			if (domain.hostname.endsWith(syncStorage.acb_exceptions[i])) {
 				reject("site is in exceptions list")
 				return
+			}
+		}
+
+		// check if this website is in solutions list
+		for (let customSolution of solutions) {
+			if (domain.hostname.endsWith(customSolution.url)) {
+				if (customSolution.do_nothing) {
+					cookieLog(`site is customly excepted to do nothing`)
+					reject("site is custom rejected")
+					return
+				} else {
+					options.keyWords = customSolution.keywords.split(",").map(e => e.trim())
+					cookieLog(`custom keywords from custom solutions: ${customSolution.keywords}`)
+				}
+				break
 			}
 		}
 
@@ -568,7 +630,6 @@ async function main() {
 	// additional check for local exception
 	if (
 		localStorage.exception == window.location.href
-		|| !localStorage.ACB_ACTIVE
 	) {
 		cookieLog("Encountered Temporary Exception [EXITING]")
 		return
@@ -597,3 +658,6 @@ chrome.runtime.onMessage.addListener(request => {
 
 // begin execution by calling async main method
 main()
+
+// for certain sites, there are manual options to override the keywords
+// the library of keywords is updated once a day
